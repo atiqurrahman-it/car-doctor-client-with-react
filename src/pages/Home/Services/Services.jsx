@@ -5,12 +5,12 @@ const Services = () => {
   const [services, setServices] = useState([]);
 
   useEffect(() => {
-    fetch("services.json")
+    fetch("http://localhost:5000/services")
       .then((res) => res.json())
       .then((data) => {
-        setServices(data)
+        setServices(data);
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   }, []);
 
   console.log(services);
@@ -25,10 +25,10 @@ const Services = () => {
           believable.
         </p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
-        {
-            services.map(service=> <ServiceCard service={service} key={service._id}></ServiceCard>)
-        }
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6  pb-10">
+        {services.map((service) => (
+          <ServiceCard service={service} key={service._id}></ServiceCard>
+        ))}
       </div>
     </div>
   );
