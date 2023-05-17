@@ -2,11 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../providers/AuthProviders";
 import BookingsRow from "./BookingsRow";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
 
 const Bookings = () => {
   const { user } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
 
+  const  navigate=useNavigate()
+
+
+  // function 
   const handelBookingStatus = (id) => {
     fetch(`http://localhost:5000/bookings/${id}`, {
       method: "PATCH",
@@ -36,15 +42,30 @@ const Bookings = () => {
       .catch((error) => console.log(error));
   };
 
+  const url=`http://localhost:5000/bookings?email=${user?.email}`
   useEffect(() => {
-    fetch(`http://localhost:5000/bookings?email=${user?.email}`)
+    fetch(url,{
+      // verify er jonno  
+      method:"GET",
+      headers:{
+        authorization:`Bearer ${localStorage.getItem('car-doctors-access-token')}`
+      }
+    })
       .then((res) => res.json())
       .then((data) => {
-        setBookings(data);
+        // token validation and token na thakle 
+        if(!data.error){
+          setBookings(data);
+        }
+        else{
+          //logout then home page redirect korte hobe 
+          navigate('/')
+        }
+
         // console.log(data)
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [url]);
 
   return (
     <div>

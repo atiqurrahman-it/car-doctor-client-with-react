@@ -1,10 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import loginImage from "../../assets/images/login/login.svg";
 import { useContext } from "react";
 import { AuthContext } from "../../providers/AuthProviders";
+import SocialLogin from "../shared/SocialLogin/SocialLogin";
 
 const Login = () => {
   const {logInUser}=useContext(AuthContext)
+
+  // 
+  let navigate = useNavigate();
+  let location = useLocation();
+
+  let from = location.state?.from?.pathname || "/";
 
   const handelLogin = (event) => {
     event.preventDefault();
@@ -17,7 +24,10 @@ const Login = () => {
     logInUser(email,password)
     .then(result=>{
       const user = result.user;
-      console.log(user)
+      console.log("login user",user)
+      form.reset()
+      navigate(from, { replace: true });
+
 
     })
     .catch((error) => {
@@ -74,12 +84,8 @@ const Login = () => {
               </div>
             </form>
            
-            <div className="divider">OR</div>
-
-            <div>
-              <button> fb</button>
-              <button> gi</button>
-            </div>
+            {/* socialLogin  */}
+            <SocialLogin></SocialLogin>
 
             <p className="text-center">
               New to car doctors

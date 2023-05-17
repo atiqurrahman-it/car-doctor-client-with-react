@@ -1,9 +1,11 @@
 import { createContext, useEffect, useState } from "react";
 import {
+  GoogleAuthProvider,
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile,
 } from "firebase/auth";
@@ -16,6 +18,8 @@ const auth = getAuth(app);
 const AuthProviders = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const googleProvider = new GoogleAuthProvider();
 
   // register user
   const createUser = (email, password) => {
@@ -36,6 +40,18 @@ const AuthProviders = ({ children }) => {
     });
   };
 
+     // social login 
+     const logInWithGoogle=()=>{
+      setLoading(true)
+      return signInWithPopup(auth,googleProvider)
+  }
+
+  // const logInWithGitHub=()=>{
+  //     setLoading(true)
+  //     return signInWithPopup(auth,gitHubAuthProvider)
+  // }
+
+
   // user logout
   const logOutUser = () => {
     setLoading(true);
@@ -48,6 +64,36 @@ const AuthProviders = ({ children }) => {
       setUser(currentUser);
       console.log("current user ", currentUser);
       setLoading(false);
+
+      
+      // ------------jws token start  -----------------------------
+      if(currentUser && currentUser.email){
+        const loggedUser={
+          email:currentUser.email,
+        }
+        fetch('http://localhost:5000/jwt-token',{
+          method:'POST',
+          headers:{
+           'content-type':"application/json"
+          },
+          body:JSON.stringify(loggedUser)
+        })
+        .then(res=>res.json())
+        .then(data=>{
+          console.log('jsw responsive ',data)
+          // warning local store is not  the best (second best place) to store access token
+          localStorage.setItem('car-doctors-access-token',data.token)
+          
+        })
+        .catch(error=>console.log(error))
+      }else{
+        localStorage.removeItem('car-doctors-access-token')
+      }
+
+
+     // ------------jws token start  -----------------------------
+
+
     });
 
     return () => {
@@ -63,6 +109,7 @@ const AuthProviders = ({ children }) => {
     logInUser,
     updateUser,
     logOutUser,
+    logInWithGoogle,
   };
 
   return (

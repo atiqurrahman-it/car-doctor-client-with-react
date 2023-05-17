@@ -9,6 +9,7 @@ const NavBar = () => {
   const handelLogOut=()=>{
     logOutUser()
     console.log("logout successfully ")
+    
   }
   
   const navList=<>
